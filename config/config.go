@@ -19,9 +19,19 @@ type PostgreSQL struct {
 	Password string `json:"password"`
 }
 
+type Redis struct {
+	DB            int     `json:"db"`
+	Host          string  `json:"host"`
+	Port          string  `json:"port"`
+	Password      string  `json:"password"`
+	RateLimiter   float64 `json:"rate_limiter"`
+	SlidingWindow int     `json:"sliding_window"`
+}
+
 type Config struct {
 	App        App
 	PostgreSQL PostgreSQL
+	Redis      Redis
 }
 
 func NewConfig() Config {
@@ -40,6 +50,12 @@ func NewConfig() Config {
 			User:     viper.GetString("PSQL_DB_USER"),
 			Port:     viper.GetString("PSQL_DB_PORT"),
 			Password: viper.GetString("PSQL_DB_PASS"),
+		},
+		Redis: Redis{
+			DB:       viper.GetInt("REDIS_DB"),
+			Host:     viper.GetString("REDIS_HOST"),
+			Port:     viper.GetString("REDIS_PORT"),
+			Password: viper.GetString("REDIS_PASS"),
 		},
 	}
 }

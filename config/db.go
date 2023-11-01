@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (cfg Config) PostgreSQLConnect() (*sql.DB, error) {
+func (cfg Config) NewDatabase() (*sql.DB, error) {
 
 	dbConnString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.PostgreSQL.Host,
