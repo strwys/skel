@@ -11,10 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/strwys/fms/config"
-	"github.com/strwys/fms/internal/handler"
 	"github.com/strwys/fms/internal/redis"
-	"github.com/strwys/fms/internal/repository"
-	"github.com/strwys/fms/internal/service"
 )
 
 func RunServer() {
@@ -36,7 +33,9 @@ func RunServer() {
 	}
 
 	e := echo.New()
+
 	e.Use(middleware.Recover())
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{
@@ -49,10 +48,7 @@ func RunServer() {
 		},
 	}))
 
-	authRepo := repository.NewAuthRepository(db)
-	authSvc := service.NewAuthService(authRepo)
-
-	handler.NewAuthHandler(e, authSvc, redisCache)
+	RegistryRoute(e, db, redisCache)
 
 	// Starting server
 	go func() {
