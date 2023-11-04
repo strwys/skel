@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/strwys/fms/config"
+	"github.com/strwys/fms/util/logger"
 )
 
 const (
@@ -22,7 +23,11 @@ type redisCache struct {
 }
 
 // NewRedisCache return new redis cache
-func NewRedisCache(client *redis.Client, cfg config.Config) (RedisCache, error) {
+func NewRedisCache(cfg config.Config) (RedisCache, error) {
+	client, err := cfg.NewRedisClient(cfg.Redis.DB, cfg.Redis.Password)
+	if err != nil {
+		logger.Log.Fatal(err.Error())
+	}
 	return &redisCache{
 		client:        client,
 		rateLimiter:   cfg.Redis.RateLimiter,

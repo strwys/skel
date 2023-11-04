@@ -12,22 +12,22 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/strwys/fms/config"
 	"github.com/strwys/fms/internal/redis"
+	"github.com/strwys/fms/util/logger"
 )
 
 func RunServer() {
-	config := config.NewConfig()
+	cfg := config.NewConfig()
 
-	db, err := config.NewDatabase()
+	db, err := cfg.NewDatabase()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	redisClient, err := config.NewRedisClient()
-	if err != nil {
+	if err := logger.Init(cfg.App.LogLevel, cfg.App.LogTimeFormat); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	redisCache, err := redis.NewRedisCache(redisClient, config)
+	redisCache, err := redis.NewRedisCache(cfg)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -52,11 +52,11 @@ func RunServer() {
 
 	// Starting server
 	go func() {
-		if config.App.HTTPPort == "" {
-			config.App.HTTPPort = "8000"
+		if cfg.App.HTTPPort == "" {
+			cfg.App.HTTPPort = "8000"
 		}
 
-		err := e.Start(":" + config.App.HTTPPort)
+		err := e.Start(":" + cfg.App.HTTPPort)
 		if err != nil {
 			log.Fatal("error starting server: ", err.Error())
 		}
